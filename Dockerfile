@@ -1,15 +1,14 @@
-FROM alpine:3.17.7 AS build
+FROM alpine:3.19 AS build
 LABEL maintainer="Ozren Dabić (dabico@usi.ch)"
 
 ENV JAVA_HOME="/usr/lib/jvm/java-11-openjdk"
 
 RUN apk update && \
     apk add --no-cache \
-            openjdk11~=11.0.23 \
-            python3~=3.10.14 \
-            py3-distutils-extra~=2.47 \
-            make~=4.3 \
-            g++~=12.2.1
+    openjdk11 \
+    python3 \
+    make \
+    g++
 
 WORKDIR /java-tree-sitter
 COPY . ./
