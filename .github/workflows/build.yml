@@ -35,8 +35,10 @@ jobs:
           mkdir -p libs
           OUTPUT_DIR="libs/$(echo '${{ matrix.platform }}' | tr '/' '_')"
           sudo docker buildx build --platform ${{ matrix.platform }} -t java-tree-sitter:latest -f Dockerfile --output "$OUTPUT_DIR" .
-          ls -l $OUTPUT_DIR
-          mv $OUTPUT_DIR/libjava-tree-sitter.so artifacts/libjava-tree-sitter-$(echo '${{ matrix.platform }}' | tr '/' '_').so
+          sudo chown -R $USER:$USER "$OUTPUT_DIR"
+          ls -l "$OUTPUT_DIR"
+          mkdir -p artifacts
+          mv "$OUTPUT_DIR/libjava-tree-sitter.so" "artifacts/libjava-tree-sitter-$(echo '${{ matrix.platform }}' | tr '/' '_').so"
       - name: Replace spaces in string
         id: strs
         run: |
