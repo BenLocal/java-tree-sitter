@@ -1,0 +1,31 @@
+name: build
+
+env:
+  REGISTRY: ghcr.io
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build_libs:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [linux/amd64, linux/arm64]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: prepare
+        run: |
+          sudo apt-get update && sudo apt-get install -y wget
+          git submodule update --init --recursive 
+      - name: build lib
+        run: |
+          OUTPUT_DIR="build_libs/$(echo $PLATFORM | tr '/' '_')"
+          docker buildx build --platform ${{ matrix.platform }} -t java-tree-sitter:latest -f Dockerfile --output $OUTPUT_DIR
