@@ -9,7 +9,7 @@ on:
       buildLibrary:
         description: "Build the library"
         type: boolean
-        default: false
+        default: true
 
 env:
   REGISTRY: ghcr.io
