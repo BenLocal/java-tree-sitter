@@ -25,7 +25,7 @@ jobs:
       matrix:
         platform: [linux/amd64, linux/arm64]
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.buildLibrary != 'true' }}
+    if: ${{ github.event.inputs.buildLibrary == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -39,5 +39,19 @@ jobs:
           git submodule update --init --recursive 
       - name: build lib
         run: |
-          OUTPUT_DIR="build_libs/$(echo '${{ matrix.platform }}' | tr '/' '_')"
+          mkdir -p libs
+          OUTPUT_DIR="libs/$(echo '${{ matrix.platform }}' | tr '/' '_')"
           sudo docker buildx build --platform ${{ matrix.platform }} -t java-tree-sitter:latest -f Dockerfile --output "$OUTPUT_DIR" .
+          ls -l $OUTPUT_DIR
+          mv $OUTPUT_DIR/libjava-tree-sitter.so artifacts/libjava-tree-sitter-$(echo '${{ matrix.platform }}' | tr '/' '_').so
+      - name: Replace spaces in string
+        id: strs
+        run: |
+          SLUG="$(echo ${{ matrix.platform }} | tr '/' '_')"
+          echo "artifact_slug=${SLUG// /-}" >> $GITHUB_OUTPUT
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: libjava-tree-sitter-${{ steps.strs.outputs.artifact_slug }}
+          overwrite: true
+          path: artifacts/*
