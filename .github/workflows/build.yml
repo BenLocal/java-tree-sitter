@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - arch
-  workflow_call:
-    inputs:
-      buildLibrary:
-        description: "Build the library"
-        type: boolean
-        default: true
 
 env:
   REGISTRY: ghcr.io
@@ -25,7 +19,6 @@ jobs:
       matrix:
         platform: [linux/amd64, linux/arm64]
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.buildLibrary == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
